@@ -46,7 +46,8 @@ namespace Simulator.Sensors
         private Vector3 startPosition;
         private Quaternion startRotation;
 
-        public override SensorDistributionType DistributionType => SensorDistributionType.LowLoad;
+        public override SensorDistributionType DistributionType => SensorDistributionType.MainOrClient;
+        public override float PerformanceLoad { get; } = 0.05f;
 
         private void Awake()
         {
@@ -55,14 +56,20 @@ namespace Simulator.Sensors
             startRotation = transform.rotation;
         }
 
-        public void Start()
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            Destroyed = true;
+        }
+
+        protected override void Initialize()
         {
             Task.Run(Publisher);
         }
 
-        void OnDestroy()
+        protected override void Deinitialize()
         {
-            Destroyed = true;
+            
         }
 
         public override void OnBridgeSetup(BridgeInstance bridge)
